@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tic-Tac-Toe :: Visualizer</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="css/style.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.min.js"></script>
+</head>
+
+<body>
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-12 text-center h1 p-1 text">Tic-Tac-Toe Visualizer</div>
+        </div>
+        <div class="row pt-3 text-center">
+            <div class="col-md-1"></div>
+            <div class="col-md-10">
+                <table class="table2">
+                    <tr>
+                        <td id='OneOne' class="td"></td>
+                        <td class="td vert" id='OneTwo'></td>
+                        <td id='OneThree' class="td"></td>
+                    </tr>
+                    <tr>
+                        <td id='TwoOne' class="td hori"></td>
+                        <td id='TwoTwo' class="td vert hori"></td>
+                        <td id='TwoThree' class="td hori"></td>
+                    </tr>
+                    <tr>
+                        <td id='ThreeOne' class="td"></span></td>
+                        <td id="ThreeTwo" class="td vert"></td>
+                        <td id="ThreeThree" class="td"></td>
+                    </tr>
+                </table>
+            </div>
+            <div class="col-md-1">
+
+            </div>
+
+
+        </div>
+        <div class="row text-center">
+            <div class="col-md-12 mt-3">
+                <button id='reset' class="btn btn-outline-dark">Reset</button>
+            </div>
+
+        </div>
+
+        <div class="row" id="visualizeConatiner">
+
+        </div>
+    </div>
+
+    <script src="js/app.js"></script>
+</body>
+
+</html>
