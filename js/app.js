@@ -15,6 +15,17 @@ let board = [
     ["", "", ""],
 ];
 
+const backGroundColors = [
+    "violet",
+    "indigo",
+    "blue",
+    "green",
+    "yellow",
+    "orange",
+    "red",
+    "black",
+];
+
 const ai = "O";
 const human = "X";
 
@@ -110,9 +121,40 @@ function printPlayerSymbol(fromId) {
         $(`#${fromId}`).html(`<span class="text playerText">${human}</span>`);
         board[boardI][boardJ] = human;
         ++boardMoveNumber;
+        let win = checkWin();
+        if (win) {
+            alert("Human Wins..");
+            resetAll();
+        }
         switchPlayer();
     }
 }
+
+function drawIntermediateBoard(board) {
+    $("#visualizeConatiner").append(`
+    <div class='smallBox col text-center ${backGroundColors[freeCount]}'>
+    <table class='smallTable' >
+    <tr>
+        <td class="smallTd">${board[0][0]}</td>
+        <td class="smallTd vert" >${board[0][1]}</td>
+        <td  class="smallTd">${board[0][2]}</td>
+    </tr>
+    <tr>
+        <td  class="smallTd hori">${board[1][0]}</td>
+        <td  class="smallTd vert hori">${board[1][1]}</td>
+        <td  class="smallTd hori">${board[1][2]}</td>
+    </tr>
+    <tr>
+        <td  class="smallTd">${board[2][0]}</td>
+        <td  class="smallTd vert">${board[2][1]}</td>
+        <td  class="smallTd">${board[2][2]}</td>
+    </tr>
+</table>
+</div>`);
+}
+
+let first = true;
+let freeCount = 0;
 
 function switchPlayer() {
     //console.log("PLAYER SWITCHED");
@@ -122,30 +164,10 @@ function switchPlayer() {
         for (j = 0; j < 3; j++) {
             if (board[i][j] == "") {
                 board[i][j] = ai;
+                // drawIntermediateBoard(board);
                 let score = minimax(board, 0, false);
-
-                $("#visualizeConatiner").append(`
-                <div class='smallBox col-md-2 text-center'>
-                <table class='smallTable' >
-                <tr>
-                    <td class="smallTd">${board[0][0]}</td>
-                    <td class="smallTd vert" >${board[0][1]}</td>
-                    <td  class="smallTd">${board[0][2]}</td>
-                </tr>
-                <tr>
-                    <td  class="smallTd hori">${board[1][0]}</td>
-                    <td  class="smallTd vert hori">${board[1][1]}</td>
-                    <td  class="smallTd hori">${board[1][2]}</td>
-                </tr>
-                <tr>
-                    <td  class="smallTd">${board[2][0]}</td>
-                    <td  class="smallTd vert">${board[2][1]}</td>
-                    <td  class="smallTd">${board[2][2]}</td>
-                </tr>
-            </table>
-            </div>`);
+                ++freeCount;
                 board[i][j] = "";
-
                 if (bestScore < score) {
                     bestScore = score;
                     besti = i;
@@ -154,7 +176,7 @@ function switchPlayer() {
             }
         }
     }
-    console.log("I,J===>", besti, bestj, bestScore, board);
+    // console.log("I,J===>", besti, bestj, bestScore, board);
     switch (besti) {
         case 0:
             switch (bestj) {
@@ -217,6 +239,13 @@ function switchPlayer() {
             break;
     }
     board[besti][bestj] = ai;
+    setTimeout(() => {
+        let win = checkWin();
+        if (win) {
+            alert("AI Wins....");
+            resetAll();
+        }
+    }, 200);
 }
 
 function resetAll() {
@@ -244,6 +273,7 @@ function minimax(board, depth, isMaximizingPlayer) {
                 if (board[i][j] == "") {
                     board[i][j] = ai;
                     let score = minimax(board, depth + 1, false);
+
                     board[i][j] = "";
                     if (bestScore < score) {
                         bestScore = score;
@@ -262,6 +292,7 @@ function minimax(board, depth, isMaximizingPlayer) {
                 if (board[i][j] == "") {
                     board[i][j] = human;
                     let score = minimax(board, depth + 1, true);
+
                     board[i][j] = "";
                     if (bestScore > score) {
                         bestScore = score;
@@ -317,4 +348,80 @@ function checkWin() {
     } else {
         return winner;
     }
+}
+
+//d3 code;
+const width = 1200;
+
+fetch("/js/data.json")
+    .then((res) => res.json())
+    .then((data) => {
+        draw(data);
+    });
+
+function tree(data) {
+    const root = d3.hierarchy(data);
+    root.dx = 10;
+    root.dy = width / (root.height + 1);
+    return d3.tree().nodeSize([root.dx, root.dy])(root);
+}
+
+function draw(data) {
+    // console.log(data);
+    const root = tree(data);
+
+    let x0 = Infinity;
+    let x1 = -x0;
+    root.each((d) => {
+        if (d.x > x1) x1 = d.x;
+        if (d.x < x0) x0 = d.x;
+    });
+
+    const svg = d3
+        .create("svg")
+        .attr("viewBox", [-(width/2)+130, 500, width, width ]);
+    const g = svg
+        .append("g")
+        .attr("font-family", "sans-serif")
+        .attr("font-size", 10)
+        .attr("transform", `translate(${root.dy / 3},${root.dx - x0})`);
+
+    const link = g
+        .append("g")
+        .attr("fill", "none")
+        .attr("stroke", "#555")
+        .attr("stroke-opacity", 1)
+        .attr("stroke-width",1.5)
+        .selectAll("path")
+        .data(root.links())
+        .join("path")
+        .attr("d",d3.linkVertical()
+                .x((d) => d.x)
+                .y((d) => d.y)
+        );
+
+    const node = g
+        .append("g")
+        .attr("stroke-linejoin", "round")
+        .attr("stroke-width", 3)
+        .selectAll("g")
+        .data(root.descendants())
+        .join("g")
+        .attr("transform", (d) => `translate(${d.x},${d.y})`);
+
+    node.append("circle")
+        .attr("fill", (d) => (d.children ? "#555" : "#999"))
+        .attr("r", 2.5);
+
+    node.append("text")
+        .attr("dy", (d)=>"0.32rem")
+        .attr("x", (d) => (d.children ? -6 : 6))
+        .attr("text-anchor", (d) => (d.children ? "end" : "start"))
+        .text((d) => d.data.name)
+        .clone(true)
+        .lower()
+        .attr("stroke", "white");
+    
+    // console.log(svg.node())
+    $("#visualizeConatiner").html(svg.node());
 }
