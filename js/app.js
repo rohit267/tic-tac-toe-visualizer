@@ -353,7 +353,7 @@ function checkWin() {
 //d3 code;
 const width = 1200;
 
-fetch("/js/data.json")
+fetch("js/data.json")
     .then((res) => res.json())
     .then((data) => {
         draw(data);
