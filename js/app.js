@@ -156,6 +156,10 @@ function drawIntermediateBoard(board) {
 let first = true;
 let freeCount = 0;
 
+let boardArrayData = [];
+
+let boardRoot;
+
 function switchPlayer() {
     //console.log("PLAYER SWITCHED");
     let bestScore = -Infinity;
@@ -164,8 +168,7 @@ function switchPlayer() {
         for (j = 0; j < 3; j++) {
             if (board[i][j] == "") {
                 board[i][j] = ai;
-                // drawIntermediateBoard(board);
-                let score = minimax(board, 0, false);
+                let score = minimax(board, 0, false, "root");
                 ++freeCount;
                 board[i][j] = "";
                 if (bestScore < score) {
@@ -176,7 +179,27 @@ function switchPlayer() {
             }
         }
     }
-    // console.log("I,J===>", besti, bestj, bestScore, board);
+
+    //Convert the array to tree Object https://typeofnan.dev/an-easy-way-to-build-a-tree-with-object-references/
+    const idMapping = boardArrayData.reduce((acc, el, i) => {
+        acc[el.id] = i;
+        return acc;
+    }, {});
+
+    boardArrayData.forEach((el) => {
+        // Handle the root element
+        if (el.parent === "root") {
+            boardRoot = el;
+            return;
+        }
+        // Use our mapping to locate the parent element in our data array
+        const parentEl = boardArrayData[idMapping[el.parent]];
+        // Add our current el to its parent's `children` array
+        parentEl.children = [...(parentEl.children || []), el];
+    });
+    draw(boardRoot);
+    // console.log(boardRoot);
+
     switch (besti) {
         case 0:
             switch (bestj) {
@@ -252,7 +275,7 @@ function resetAll() {
     window.location.reload();
 }
 
-function minimax(board, depth, isMaximizingPlayer) {
+function minimax(board, depth, isMaximizingPlayer, parentId) {
     result = checkWin();
 
     if (result !== null) {
@@ -272,7 +295,19 @@ function minimax(board, depth, isMaximizingPlayer) {
             for (j = 0; j < 3; j++) {
                 if (board[i][j] == "") {
                     board[i][j] = ai;
-                    let score = minimax(board, depth + 1, false);
+                    let thisId = uuidv4();
+                    boardArrayData.push({
+                        id: thisId + returnBoardString(board),
+                        parent: parentId,
+                        boad: board,
+                        children: [],
+                    });
+                    let score = minimax(
+                        board,
+                        depth + 1,
+                        false,
+                        thisId + returnBoardString(board)
+                    );
 
                     board[i][j] = "";
                     if (bestScore < score) {
@@ -291,8 +326,19 @@ function minimax(board, depth, isMaximizingPlayer) {
             for (j = 0; j < 3; j++) {
                 if (board[i][j] == "") {
                     board[i][j] = human;
-                    let score = minimax(board, depth + 1, true);
-
+                    let thisId = uuidv4();
+                    boardArrayData.push({
+                        id: thisId + returnBoardString(board),
+                        parent: parentId,
+                        boad: board,
+                        children: [],
+                    });
+                    let score = minimax(
+                        board,
+                        depth + 1,
+                        true,
+                        thisId + returnBoardString(board)
+                    );
                     board[i][j] = "";
                     if (bestScore > score) {
                         bestScore = score;
@@ -303,6 +349,16 @@ function minimax(board, depth, isMaximizingPlayer) {
         }
         return bestScore;
     }
+}
+
+function returnBoardString(mBoard) {
+    let mString = "";
+    for (let i = 0; i < 3; i++) {
+        for (let j = 0; j < 3; j++) {
+            mString += mBoard[i][j];
+        }
+    }
+    return mString;
 }
 
 function isEqual(x, y, z) {
@@ -351,13 +407,13 @@ function checkWin() {
 }
 
 //d3 code;
-const width = 1200;
+const width = 10000;
 
-fetch("./js/data.json")
-    .then((res) => res.json())
-    .then((data) => {
-        draw(data);
-    });
+// fetch("./js/data.json")
+//     .then((res) => res.json())
+//     .then((data) => {
+//         draw(data);
+//     });
 
 function tree(data) {
     const root = d3.hierarchy(data);
@@ -367,7 +423,7 @@ function tree(data) {
 }
 
 function draw(data) {
-    // console.log(data);
+    console.log(data);
     const root = tree(data);
 
     let x0 = Infinity;
@@ -377,9 +433,7 @@ function draw(data) {
         if (d.x < x0) x0 = d.x;
     });
 
-    const svg = d3
-        .create("svg")
-        .attr("viewBox", [-(width/2)+130, 500, width, width ]);
+    const svg = d3.create("svg").attr("viewBox", [(-width / 2) + 480, (width / 2) - 200, width, 6000]);
     const g = svg
         .append("g")
         .attr("font-family", "sans-serif")
@@ -391,13 +445,13 @@ function draw(data) {
         .attr("fill", "none")
         .attr("stroke", "#555")
         .attr("stroke-opacity", 1)
-        .attr("stroke-width",1.5)
+        .attr("stroke-width", 3)
         .selectAll("path")
         .data(root.links())
         .join("path")
-        .attr("d",d3.linkVertical()
-                .x((d) => d.x)
-                .y((d) => d.y)
+        .attr(
+            "d",
+            d3.linkVertical().x((d) => d.x).y((d) => d.y)
         );
 
     const node = g
@@ -414,14 +468,15 @@ function draw(data) {
         .attr("r", 2.5);
 
     node.append("text")
-        .attr("dy", (d)=>"0.32rem")
+        .attr("dy", (d) => "0.32rem")
         .attr("x", (d) => (d.children ? -6 : 6))
         .attr("text-anchor", (d) => (d.children ? "end" : "start"))
-        .text((d) => d.data.name)
+        // .text((d) => d.data.name)
+        .text((d) => d.data.id.substr(0, 1))
         .clone(true)
         .lower()
         .attr("stroke", "white");
-    
+
     // console.log(svg.node())
     $("#visualizeConatiner").html(svg.node());
 }
