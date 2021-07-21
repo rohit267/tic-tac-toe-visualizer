@@ -235,17 +235,23 @@ function switchPlayer() {
                 board[i][j] = ai;
 
                 // var boardCopy = board.slice();
+                let thisId;
 
-                let thisId = uuidv4();
+                if(boardMoveNumber >= 2 ){
 
-                boardArrayData.push({
-                    id: thisId + returnBoardString(board),
-                    parent: "supreme",
-                    boad: JSON.parse(JSON.stringify(board)),
-                    children: [],
-                });
+                    thisId = uuidv4() + returnBoardString(board);
 
-                let score = minimax(board, 0, false, thisId + returnBoardString(board));
+                    boardArrayData.push({
+                        id: thisId ,
+                        parent: "supreme",
+                        boad: JSON.parse(JSON.stringify(board)),
+                        children: [],
+                    });
+                }else{
+                    thisId = "kchhMatKaro"
+                }   
+
+                let score = minimax(board, 0, false, thisId);
                 ++freeCount;
                 board[i][j] = "";
                 if (bestScore < score) {
@@ -277,6 +283,7 @@ function switchPlayer() {
     // boardRoot = "supreme";
     draw(boardRoot);
     console.log(boardRoot);
+
 
     switch (besti) {
         case 0:
@@ -373,19 +380,29 @@ function minimax(board, depth, isMaximizingPlayer, parentId) {
             for (j = 0; j < 3; j++) {
                 if (board[i][j] == "") {
                     board[i][j] = ai;
-                    let thisId = uuidv4();
-                    boardArrayData.push({
-                        id: thisId + returnBoardString(board),
-                        parent: parentId,
-                        boad: JSON.parse(JSON.stringify(board)),
-                        children: [],
-                    });
-                    let score = minimax(
-                        board,
-                        depth + 1,
-                        false,
-                        thisId + returnBoardString(board)
-                    );
+                    let score;
+                    if(parentId != "kchhMatKaro"){
+                        let thisId = uuidv4();
+                        boardArrayData.push({
+                            id: thisId + returnBoardString(board),
+                            parent: parentId,
+                            boad: JSON.parse(JSON.stringify(board)),
+                            children: [],
+                        });
+                        score = minimax(
+                            board,
+                            depth + 1,
+                            false,
+                            thisId + returnBoardString(board)
+                        );
+                    }else{
+                        score = minimax(
+                            board,
+                            depth + 1,
+                            false,
+                            "kchhMatKaro"
+                        );
+                    }
 
                     board[i][j] = "";
                     if (bestScore < score) {
@@ -404,19 +421,30 @@ function minimax(board, depth, isMaximizingPlayer, parentId) {
             for (j = 0; j < 3; j++) {
                 if (board[i][j] == "") {
                     board[i][j] = human;
-                    let thisId = uuidv4();
-                    boardArrayData.push({
+                    let score;
+                    if(parentId != "kchhMatKaro"){
+                        let thisId = uuidv4();
+
+                        boardArrayData.push({
                         id: thisId + returnBoardString(board),
                         parent: parentId,
                         boad: JSON.parse(JSON.stringify(board)),
                         children: [],
-                    });
-                    let score = minimax(
-                        board,
-                        depth + 1,
-                        true,
-                        thisId + returnBoardString(board)
-                    );
+                        });
+                         score = minimax(
+                            board,
+                            depth + 1,
+                            true,
+                            thisId + returnBoardString(board)
+                        );
+                    }else{
+                         score = minimax(
+                            board,
+                            depth + 1,
+                            true,
+                            "kchhMatKaro"
+                        );
+                    }
                     board[i][j] = "";
                     if (bestScore > score) {
                         bestScore = score;
@@ -550,4 +578,16 @@ function draw(data) {
 
     // console.log(svg.node())
     $("#visualizeConatiner").html(svg.node());
+
+
+
+
+    boardArrayData = [];
+    boardArrayData.push({
+        id: "supreme",
+        parent: "sabkaBaap",
+        boad: JSON.parse(JSON.stringify(board)),
+        children: [],
+    });
+
 }
