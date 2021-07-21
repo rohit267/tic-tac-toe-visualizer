@@ -126,6 +126,7 @@ function printPlayerSymbol(fromId) {
             alert("Human Wins..");
             resetAll();
         }
+        // arrayFiller();
         switchPlayer();
     }
 }
@@ -157,8 +158,71 @@ let first = true;
 let freeCount = 0;
 
 let boardArrayData = [];
+boardArrayData.push({
+    id: "supreme",
+    parent: "sabkaBaap",
+    boad: JSON.parse(JSON.stringify(board)),
+    children: [],
+});
 
 let boardRoot;
+
+// function arrayFiller(){
+//     fillBoardRecursively("root", ai, board);
+//     //Convert the array to tree Object https://typeofnan.dev/an-easy-way-to-build-a-tree-with-object-references/
+//     const idMapping = boardArrayData.reduce((acc, el, i) => {
+//         acc[el.id] = i;
+//         return acc;
+//     }, {});
+
+//     boardArrayData.forEach((el) => {
+//         // Handle the root element
+//         if (el.parent === "root") {
+//             boardRoot = el;
+//             return;
+//         }
+//         // Use our mapping to locate the parent element in our data array
+//         const parentEl = boardArrayData[idMapping[el.parent]];
+//         // Add our current el to its parent's `children` array
+//         parentEl.children = [...(parentEl.children || []), el];
+//     });
+//     draw(boardRoot);
+//     // console.log(boardRoot);
+// }
+
+// function fillBoardRecursively(parentNode,player, board){
+//     for(int i=0; i<3; i++){
+//         for(int j=0; j<3; j++){
+//             if(board[i][j] == ""){
+//                 if(player === ai){
+//                     board[i][j] = ai;
+//                     let thisId = uuidv4();
+//                     boardArrayData.push({
+//                         id: thisId + returnBoardString(board),
+//                         parent: parentNode,
+//                         boad: board,
+//                         children: [],
+//                     });
+//                     fillBoardRecursively(thisId + returnBoardString(board), human, board);
+//                     board[i][j] = "";
+//                 }else{
+//                     board[i][j] = human;
+//                     let thisId = uuidv4();
+//                     boardArrayData.push({
+//                         id: thisId + returnBoardString(board),
+//                         parent: parentNode,
+//                         boad: board,
+//                         children: [],
+//                     });
+//                     fillBoardRecursively(thisId + returnBoardString(board), ai, board);
+//                     board[i][j] = "";
+//                 }
+//             }
+//         }
+//     }
+// }
+
+
 
 function switchPlayer() {
     //console.log("PLAYER SWITCHED");
@@ -167,8 +231,21 @@ function switchPlayer() {
     for (i = 0; i < 3; i++) {
         for (j = 0; j < 3; j++) {
             if (board[i][j] == "") {
+
                 board[i][j] = ai;
-                let score = minimax(board, 0, false, "root");
+
+                // var boardCopy = board.slice();
+
+                let thisId = uuidv4();
+
+                boardArrayData.push({
+                    id: thisId + returnBoardString(board),
+                    parent: "supreme",
+                    boad: JSON.parse(JSON.stringify(board)),
+                    children: [],
+                });
+
+                let score = minimax(board, 0, false, thisId + returnBoardString(board));
                 ++freeCount;
                 board[i][j] = "";
                 if (bestScore < score) {
@@ -188,7 +265,7 @@ function switchPlayer() {
 
     boardArrayData.forEach((el) => {
         // Handle the root element
-        if (el.parent === "root") {
+        if (el.parent === "sabkaBaap") {
             boardRoot = el;
             return;
         }
@@ -197,6 +274,7 @@ function switchPlayer() {
         // Add our current el to its parent's `children` array
         parentEl.children = [...(parentEl.children || []), el];
     });
+    // boardRoot = "supreme";
     draw(boardRoot);
     // console.log(boardRoot);
 
@@ -299,7 +377,7 @@ function minimax(board, depth, isMaximizingPlayer, parentId) {
                     boardArrayData.push({
                         id: thisId + returnBoardString(board),
                         parent: parentId,
-                        boad: board,
+                        boad: JSON.parse(JSON.stringify(board)),
                         children: [],
                     });
                     let score = minimax(
@@ -330,7 +408,7 @@ function minimax(board, depth, isMaximizingPlayer, parentId) {
                     boardArrayData.push({
                         id: thisId + returnBoardString(board),
                         parent: parentId,
-                        boad: board,
+                        boad: JSON.parse(JSON.stringify(board)),
                         children: [],
                     });
                     let score = minimax(
