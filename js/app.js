@@ -262,7 +262,7 @@ function switchPlayer() {
         acc[el.id] = i;
         return acc;
     }, {});
-
+    // console.log(boardArrayData);
     boardArrayData.forEach((el) => {
         // Handle the root element
         if (el.parent === "sabkaBaap") {
@@ -276,7 +276,7 @@ function switchPlayer() {
     });
     // boardRoot = "supreme";
     draw(boardRoot);
-    // console.log(boardRoot);
+    console.log(boardRoot);
 
     switch (besti) {
         case 0:
@@ -485,13 +485,7 @@ function checkWin() {
 }
 
 //d3 code;
-const width = 10000;
-
-// fetch("./js/data.json")
-//     .then((res) => res.json())
-//     .then((data) => {
-//         draw(data);
-//     });
+const width = 1500;
 
 function tree(data) {
     const root = d3.hierarchy(data);
@@ -501,7 +495,6 @@ function tree(data) {
 }
 
 function draw(data) {
-    console.log(data);
     const root = tree(data);
 
     let x0 = Infinity;
@@ -511,12 +504,12 @@ function draw(data) {
         if (d.x < x0) x0 = d.x;
     });
 
-    const svg = d3.create("svg").attr("viewBox", [(-width / 2) + 480, (width / 2) - 200, width, 6000]);
+    const svg = d3.create("svg").attr("viewBox", [-500, -200, width + 200, width + 200]);
     const g = svg
         .append("g")
         .attr("font-family", "sans-serif")
         .attr("font-size", 10)
-        .attr("transform", `translate(${root.dy / 3},${root.dx - x0})`);
+    // .attr("transform", `translate(${root.dy / 3},${root.dx - x0})`);
 
     const link = g
         .append("g")
