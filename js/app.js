@@ -122,8 +122,8 @@ function printPlayerSymbol(fromId) {
         board[boardI][boardJ] = human;
         ++boardMoveNumber;
         let win = checkWin();
-        if (win) {
-            alert("Human Wins..");
+        if (win == "tie") {
+            alert("Game Draw...");
             resetAll();
         }
         // arrayFiller();
