@@ -571,7 +571,7 @@ function draw(data) {
         .attr("x", (d) => (d.children ? -6 : 6))
         .attr("text-anchor", (d) => (d.children ? "end" : "start"))
         // .text((d) => d.data.name)
-        .text((d) => d.data.id.substr(0, 1))
+        .text((d) => returnBoard(d))
         .clone(true)
         .lower()
         .attr("stroke", "white");
@@ -590,4 +590,50 @@ function draw(data) {
         children: [],
     });
 
+}
+
+function returnBoard(d){
+    
+    let a = " ";
+    let b = " ";
+    let c = " ";
+    let j = " ";
+    let e = " ";
+    let f = " ";
+    let g = " ";
+    let h = " ";
+    let i = " ";
+
+    if(d.data.boad[0][0] != ""){
+        a = d.data.boad[0][0];
+    }
+    if(d.data.boad[0][1] != ""){
+        b = d.data.boad[0][1];
+    }
+    if(d.data.boad[0][2] != ""){
+        c = d.data.boad[0][2];
+    }
+    if(d.data.boad[0][0] != ""){
+        j = d.data.boad[1][0];
+    }
+    if(d.data.boad[0][1] != ""){
+        e = d.data.boad[1][1];
+    }
+    if(d.data.boad[0][2] != ""){
+        f = d.data.boad[1][2];
+    }
+    if(d.data.boad[0][0] != ""){
+        g = d.data.boad[2][0];
+    }
+    if(d.data.boad[0][1] != ""){
+        h = d.data.boad[2][1];
+    }
+    if(d.data.boad[0][2] != ""){
+        i = d.data.boad[2][2];
+    }
+    // let tempBoard = (a + " | " + b + " | " + c )+ '<br>'  + (a + " | " + b + " | " + c ); 
+    // var htmlSTring = "a \n $b";
+    let multilineString = a + "|" + b + "|" + c + "\n" + j + "|" + e + "|" + f + "\n" + g + "|" + h + "|" + i;
+
+    return multilineString;
 }
