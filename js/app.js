@@ -568,13 +568,88 @@ function draw(data) {
 
     node.append("text")
         .attr("dy", (d) => "0.32rem")
-        .attr("x", (d) => (d.children ? -6 : 6))
+        .attr("x", (d) => (d.children ? -20 : 6))
         .attr("text-anchor", (d) => (d.children ? "end" : "start"))
         // .text((d) => d.data.name)
-        .text((d) => returnBoard(d))
+        .text((d) => d.data.boad[0][0])
         .clone(true)
         .lower()
         .attr("stroke", "white");
+    node.append("text")
+        .attr("dy", (d) => "0.32rem")
+        .attr("x", (d) => (d.children ? -12 : 14))
+        .attr("text-anchor", (d) => (d.children ? "end" : "start"))
+        // .text((d) => d.data.name)
+        .text((d) => d.data.boad[0][1])
+        .clone(true)
+        .lower()
+        .attr("stroke", "white");
+    node.append("text")
+        .attr("dy", (d) => "0.32rem")
+        .attr("x", (d) => (d.children ? -4 : 22))
+        .attr("text-anchor", (d) => (d.children ? "end" : "start"))
+        // .text((d) => d.data.name)
+        .text((d) => d.data.boad[0][2])
+        .clone(true)
+        .lower()
+        .attr("stroke", "white");
+    node.append("text")
+        .attr("dy", (d) => "0.88rem")
+        .attr("x", (d) => (d.children ? -20 : 6))
+        .attr("text-anchor", (d) => (d.children ? "end" : "start"))
+        // .text((d) => d.data.name)
+        .text((d) => d.data.boad[1][0])
+        .clone(true)
+        .lower()
+        .attr("stroke", "white");
+    node.append("text")
+        .attr("dy", (d) => "0.88rem")
+        .attr("x", (d) => (d.children ? -12 : 14))
+        .attr("text-anchor", (d) => (d.children ? "end" : "start"))
+        // .text((d) => d.data.name)
+        .text((d) => d.data.boad[1][1])
+        .clone(true)
+        .lower()
+        .attr("stroke", "white");
+    node.append("text")
+        .attr("dy", (d) => "0.88rem")
+        .attr("x", (d) => (d.children ? -4 : 22))
+        .attr("text-anchor", (d) => (d.children ? "end" : "start"))
+        // .text((d) => d.data.name)
+        .text((d) => d.data.boad[1][2])
+        .text((d) => "\n")
+        .clone(true)
+        .lower()
+        .attr("stroke", "white");
+    node.append("text")
+        .attr("dy", (d) => "1.43rem")
+        .attr("x", (d) => (d.children ? -20 : 6))
+        .attr("text-anchor", (d) => (d.children ? "end" : "start"))
+        // .text((d) => d.data.name)
+        .text((d) => d.data.boad[2][0])
+        .clone(true)
+        .lower()
+        .attr("stroke", "white");
+    node.append("text")
+        .attr("dy", (d) => "1.43rem")
+        .attr("x", (d) => (d.children ? -12 : 14))
+        .attr("text-anchor", (d) => (d.children ? "end" : "start"))
+        // .text((d) => d.data.name)
+        .text((d) => d.data.boad[2][1])
+        .clone(true)
+        .lower()
+        .attr("stroke", "white");
+    node.append("text")
+        .attr("dy", (d) => "1.43rem")
+        .attr("x", (d) => (d.children ? -4 : 22))
+        .attr("text-anchor", (d) => (d.children ? "end" : "start"))
+        // .text((d) => d.data.name)
+        .text((d) => d.data.boad[2][2])
+        .text((d) => "\n")
+        .clone(true)
+        .lower()
+        .attr("stroke", "white");
+
 
     // console.log(svg.node())
     $("#visualizeConatiner").html(svg.node());
@@ -631,9 +706,11 @@ function returnBoard(d){
     if(d.data.boad[0][2] != ""){
         i = d.data.boad[2][2];
     }
-    // let tempBoard = (a + " | " + b + " | " + c )+ '<br>'  + (a + " | " + b + " | " + c ); 
-    // var htmlSTring = "a \n $b";
-    let multilineString = a + "|" + b + "|" + c + "\n" + j + "|" + e + "|" + f + "\n" + g + "|" + h + "|" + i;
 
-    return multilineString;
+    let text;
+    text = a+" | "+b+" | "+c+ '\n';
+    text += j+" | "+e+" | "+f+ "\n";
+    text += g+" | "+h+" | "+i+ "\n";
+
+    return text;
 }
