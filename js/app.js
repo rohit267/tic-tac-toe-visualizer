@@ -478,6 +478,7 @@ function draw(data) {
     });
 
     const svg = d3.create("svg").attr("viewBox", [-500, -300, width + 300, width + 1000]);
+        // .attr("preserveAspectRatio", "xMinYMin meet");
     const g = svg
         .append("g")
         .attr("font-family", "sans-serif")
@@ -538,6 +539,36 @@ function draw(data) {
         .clone(true)
         .lower()
         .attr("stroke", "white");
+
+    function svg_scroll(event, [x,y] ) { 
+        d3.select("svg").node(),
+             $parent = $('#visualizeConatiner'),
+             $parent_document_height=$(document),
+             w = $parent.width(),
+             h = $parent_document_height.height(),
+             sL = $parent.scrollLeft(), 
+             sT = $parent_document_height.scrollTop();
+
+             var coordinates = d3.pointer(svg_scroll),
+                x = coordinates[0],
+                y = coordinates[1];
+
+            if (x > w + sL) {
+                $parent.scrollLeft(x - w);  
+            } else if (x < sL) {
+                $parent.scrollLeft(x);
+            }
+            if (y > sT) {
+                $parent_document_height.scrollTop(y);
+            } else if (y < sT) {
+                $parent_document_height.scrollTop(y);
+            }
+
+            d3.select(this).attr({
+                x: x - 50,
+                y: y - 25
+            });
+        }
 
 
     // console.log(svg.node())
