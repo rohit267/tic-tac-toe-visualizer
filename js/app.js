@@ -158,76 +158,21 @@ let first = true;
 let freeCount = 0;
 
 let boardArrayData = [];
-boardArrayData.push({
-    id: "supreme",
-    parent: "sabkaBaap",
-    boad: JSON.parse(JSON.stringify(board)),
-    children: [],
-});
+
 
 let boardRoot;
-
-// function arrayFiller(){
-//     fillBoardRecursively("root", ai, board);
-//     //Convert the array to tree Object https://typeofnan.dev/an-easy-way-to-build-a-tree-with-object-references/
-//     const idMapping = boardArrayData.reduce((acc, el, i) => {
-//         acc[el.id] = i;
-//         return acc;
-//     }, {});
-
-//     boardArrayData.forEach((el) => {
-//         // Handle the root element
-//         if (el.parent === "root") {
-//             boardRoot = el;
-//             return;
-//         }
-//         // Use our mapping to locate the parent element in our data array
-//         const parentEl = boardArrayData[idMapping[el.parent]];
-//         // Add our current el to its parent's `children` array
-//         parentEl.children = [...(parentEl.children || []), el];
-//     });
-//     draw(boardRoot);
-//     // console.log(boardRoot);
-// }
-
-// function fillBoardRecursively(parentNode,player, board){
-//     for(int i=0; i<3; i++){
-//         for(int j=0; j<3; j++){
-//             if(board[i][j] == ""){
-//                 if(player === ai){
-//                     board[i][j] = ai;
-//                     let thisId = uuidv4();
-//                     boardArrayData.push({
-//                         id: thisId + returnBoardString(board),
-//                         parent: parentNode,
-//                         boad: board,
-//                         children: [],
-//                     });
-//                     fillBoardRecursively(thisId + returnBoardString(board), human, board);
-//                     board[i][j] = "";
-//                 }else{
-//                     board[i][j] = human;
-//                     let thisId = uuidv4();
-//                     boardArrayData.push({
-//                         id: thisId + returnBoardString(board),
-//                         parent: parentNode,
-//                         boad: board,
-//                         children: [],
-//                     });
-//                     fillBoardRecursively(thisId + returnBoardString(board), ai, board);
-//                     board[i][j] = "";
-//                 }
-//             }
-//         }
-//     }
-// }
-
 
 
 function switchPlayer() {
     //console.log("PLAYER SWITCHED");
     let bestScore = -Infinity;
     let i, j, besti, bestj;
+    boardArrayData.push({
+        id: "supreme",
+        parent: "supremeRoot",
+        boad: JSON.parse(JSON.stringify(board)),
+        children: [],
+    });
     for (i = 0; i < 3; i++) {
         for (j = 0; j < 3; j++) {
             if (board[i][j] == "") {
@@ -248,7 +193,7 @@ function switchPlayer() {
                         children: [],
                     });
                 }else{
-                    thisId = "kchhMatKaro"
+                    thisId = "temp_Null"
                 }   
 
                 let score = minimax(board, 0, false, thisId);
@@ -271,7 +216,7 @@ function switchPlayer() {
     // console.log(boardArrayData);
     boardArrayData.forEach((el) => {
         // Handle the root element
-        if (el.parent === "sabkaBaap") {
+        if (el.parent === "supremeRoot") {
             boardRoot = el;
             return;
         }
@@ -381,7 +326,7 @@ function minimax(board, depth, isMaximizingPlayer, parentId) {
                 if (board[i][j] == "") {
                     board[i][j] = ai;
                     let score;
-                    if(parentId != "kchhMatKaro"){
+                    if(parentId != "temp_Null"){
                         let thisId = uuidv4();
                         boardArrayData.push({
                             id: thisId + returnBoardString(board),
@@ -400,7 +345,7 @@ function minimax(board, depth, isMaximizingPlayer, parentId) {
                             board,
                             depth + 1,
                             false,
-                            "kchhMatKaro"
+                            "temp_Null"
                         );
                     }
 
@@ -422,7 +367,7 @@ function minimax(board, depth, isMaximizingPlayer, parentId) {
                 if (board[i][j] == "") {
                     board[i][j] = human;
                     let score;
-                    if(parentId != "kchhMatKaro"){
+                    if(parentId != "temp_Null"){
                         let thisId = uuidv4();
 
                         boardArrayData.push({
@@ -442,7 +387,7 @@ function minimax(board, depth, isMaximizingPlayer, parentId) {
                             board,
                             depth + 1,
                             true,
-                            "kchhMatKaro"
+                            "temp_Null"
                         );
                     }
                     board[i][j] = "";
@@ -517,7 +462,7 @@ const width = 1500;
 
 function tree(data) {
     const root = d3.hierarchy(data);
-    root.dx = 10;
+    root.dx = 50;
     root.dy = width / (root.height + 1);
     return d3.tree().nodeSize([root.dx, root.dy])(root);
 }
@@ -532,7 +477,7 @@ function draw(data) {
         if (d.x < x0) x0 = d.x;
     });
 
-    const svg = d3.create("svg").attr("viewBox", [-500, -200, width + 200, width + 200]);
+    const svg = d3.create("svg").attr("viewBox", [-500, -300, width + 300, width + 1000]);
     const g = svg
         .append("g")
         .attr("font-family", "sans-serif")
@@ -568,84 +513,28 @@ function draw(data) {
 
     node.append("text")
         .attr("dy", (d) => "0.32rem")
-        .attr("x", (d) => (d.children ? -20 : 6))
+        .attr("x", (d) => -14)
         .attr("text-anchor", (d) => (d.children ? "end" : "start"))
         // .text((d) => d.data.name)
-        .text((d) => d.data.boad[0][0])
+        .text((d) => returnBoard(d,0))
         .clone(true)
         .lower()
         .attr("stroke", "white");
     node.append("text")
-        .attr("dy", (d) => "0.32rem")
-        .attr("x", (d) => (d.children ? -12 : 14))
+        .attr("dy", (d) => "0.98rem")
+        .attr("x", (d) => -14)
         .attr("text-anchor", (d) => (d.children ? "end" : "start"))
         // .text((d) => d.data.name)
-        .text((d) => d.data.boad[0][1])
+        .text((d) => returnBoard(d,1))
         .clone(true)
         .lower()
         .attr("stroke", "white");
     node.append("text")
-        .attr("dy", (d) => "0.32rem")
-        .attr("x", (d) => (d.children ? -4 : 22))
+        .attr("dy", (d) => "1.64rem")
+        .attr("x", (d) => -14)
         .attr("text-anchor", (d) => (d.children ? "end" : "start"))
         // .text((d) => d.data.name)
-        .text((d) => d.data.boad[0][2])
-        .clone(true)
-        .lower()
-        .attr("stroke", "white");
-    node.append("text")
-        .attr("dy", (d) => "0.88rem")
-        .attr("x", (d) => (d.children ? -20 : 6))
-        .attr("text-anchor", (d) => (d.children ? "end" : "start"))
-        // .text((d) => d.data.name)
-        .text((d) => d.data.boad[1][0])
-        .clone(true)
-        .lower()
-        .attr("stroke", "white");
-    node.append("text")
-        .attr("dy", (d) => "0.88rem")
-        .attr("x", (d) => (d.children ? -12 : 14))
-        .attr("text-anchor", (d) => (d.children ? "end" : "start"))
-        // .text((d) => d.data.name)
-        .text((d) => d.data.boad[1][1])
-        .clone(true)
-        .lower()
-        .attr("stroke", "white");
-    node.append("text")
-        .attr("dy", (d) => "0.88rem")
-        .attr("x", (d) => (d.children ? -4 : 22))
-        .attr("text-anchor", (d) => (d.children ? "end" : "start"))
-        // .text((d) => d.data.name)
-        .text((d) => d.data.boad[1][2])
-        .text((d) => "\n")
-        .clone(true)
-        .lower()
-        .attr("stroke", "white");
-    node.append("text")
-        .attr("dy", (d) => "1.43rem")
-        .attr("x", (d) => (d.children ? -20 : 6))
-        .attr("text-anchor", (d) => (d.children ? "end" : "start"))
-        // .text((d) => d.data.name)
-        .text((d) => d.data.boad[2][0])
-        .clone(true)
-        .lower()
-        .attr("stroke", "white");
-    node.append("text")
-        .attr("dy", (d) => "1.43rem")
-        .attr("x", (d) => (d.children ? -12 : 14))
-        .attr("text-anchor", (d) => (d.children ? "end" : "start"))
-        // .text((d) => d.data.name)
-        .text((d) => d.data.boad[2][1])
-        .clone(true)
-        .lower()
-        .attr("stroke", "white");
-    node.append("text")
-        .attr("dy", (d) => "1.43rem")
-        .attr("x", (d) => (d.children ? -4 : 22))
-        .attr("text-anchor", (d) => (d.children ? "end" : "start"))
-        // .text((d) => d.data.name)
-        .text((d) => d.data.boad[2][2])
-        .text((d) => "\n")
+        .text((d) => returnBoard(d,2))
         .clone(true)
         .lower()
         .attr("stroke", "white");
@@ -653,64 +542,70 @@ function draw(data) {
 
     // console.log(svg.node())
     $("#visualizeConatiner").html(svg.node());
-
+    // $(document).ready(function(){
+    //     $('#visualizeConatiner').scrollLeft($(this).height())
+    //     })
 
 
 
     boardArrayData = [];
-    boardArrayData.push({
-        id: "supreme",
-        parent: "sabkaBaap",
-        boad: JSON.parse(JSON.stringify(board)),
-        children: [],
-    });
 
 }
 
-function returnBoard(d){
+function returnBoard(d, k){
+
+    if(k == 0){
+        let a = " .. ";
+        let b = " .. ";
+        let c = " .. ";
+        if(d.data.boad[0][0] != ""){
+            a = d.data.boad[0][0];
+        }
+        if(d.data.boad[0][1] != ""){
+            b = d.data.boad[0][1];
+        }
+        if(d.data.boad[0][2] != ""){
+            c = d.data.boad[0][2];
+        }
+
+        return a + " | " + b + " | " + c;
+
+    }
+    if(k == 1){
+        let j = " .. ";
+        let e = " .. ";
+        let f = " .. ";
+        if(d.data.boad[1][0] != ""){
+            j = d.data.boad[1][0];
+        }
+        if(d.data.boad[1][1] != ""){
+            e = d.data.boad[1][1];
+        }
+        if(d.data.boad[1][2] != ""){
+            f = d.data.boad[1][2];
+        }
+        return j + " | " + e + " | " + f;
+    }
     
-    let a = " ";
-    let b = " ";
-    let c = " ";
-    let j = " ";
-    let e = " ";
-    let f = " ";
-    let g = " ";
-    let h = " ";
-    let i = " ";
+    if(k == 2){
+    
+        let g = " .. ";
+        let h = " .. ";
+        let i = " .. ";
 
-    if(d.data.boad[0][0] != ""){
-        a = d.data.boad[0][0];
-    }
-    if(d.data.boad[0][1] != ""){
-        b = d.data.boad[0][1];
-    }
-    if(d.data.boad[0][2] != ""){
-        c = d.data.boad[0][2];
-    }
-    if(d.data.boad[0][0] != ""){
-        j = d.data.boad[1][0];
-    }
-    if(d.data.boad[0][1] != ""){
-        e = d.data.boad[1][1];
-    }
-    if(d.data.boad[0][2] != ""){
-        f = d.data.boad[1][2];
-    }
-    if(d.data.boad[0][0] != ""){
-        g = d.data.boad[2][0];
-    }
-    if(d.data.boad[0][1] != ""){
-        h = d.data.boad[2][1];
-    }
-    if(d.data.boad[0][2] != ""){
-        i = d.data.boad[2][2];
+        if(d.data.boad[2][0] != ""){
+            g = d.data.boad[2][0];
+        }
+        if(d.data.boad[2][1] != ""){
+            h = d.data.boad[2][1];
+        }
+        if(d.data.boad[2][2] != ""){
+            i = d.data.boad[2][2];
+        }
+
+        return g + " | " + h + " | " + i;
+
     }
 
-    let text;
-    text = a+" | "+b+" | "+c+ '\n';
-    text += j+" | "+e+" | "+f+ "\n";
-    text += g+" | "+h+" | "+i+ "\n";
-
-    return text;
+    
 }
