@@ -182,19 +182,19 @@ function switchPlayer() {
                 // var boardCopy = board.slice();
                 let thisId;
 
-                if(boardMoveNumber >= 2 ){
+                if (boardMoveNumber >= 2) {
 
                     thisId = uuidv4() + returnBoardString(board);
 
                     boardArrayData.push({
-                        id: thisId ,
+                        id: thisId,
                         parent: "supreme",
                         boad: JSON.parse(JSON.stringify(board)),
                         children: [],
                     });
-                }else{
+                } else {
                     thisId = "temp_Null"
-                }   
+                }
 
                 let score = minimax(board, 0, false, thisId);
                 ++freeCount;
@@ -326,7 +326,7 @@ function minimax(board, depth, isMaximizingPlayer, parentId) {
                 if (board[i][j] == "") {
                     board[i][j] = ai;
                     let score;
-                    if(parentId != "temp_Null"){
+                    if (parentId != "temp_Null") {
                         let thisId = uuidv4();
                         boardArrayData.push({
                             id: thisId + returnBoardString(board),
@@ -340,7 +340,7 @@ function minimax(board, depth, isMaximizingPlayer, parentId) {
                             false,
                             thisId + returnBoardString(board)
                         );
-                    }else{
+                    } else {
                         score = minimax(
                             board,
                             depth + 1,
@@ -367,23 +367,23 @@ function minimax(board, depth, isMaximizingPlayer, parentId) {
                 if (board[i][j] == "") {
                     board[i][j] = human;
                     let score;
-                    if(parentId != "temp_Null"){
+                    if (parentId != "temp_Null") {
                         let thisId = uuidv4();
 
                         boardArrayData.push({
-                        id: thisId + returnBoardString(board),
-                        parent: parentId,
-                        boad: JSON.parse(JSON.stringify(board)),
-                        children: [],
+                            id: thisId + returnBoardString(board),
+                            parent: parentId,
+                            boad: JSON.parse(JSON.stringify(board)),
+                            children: [],
                         });
-                         score = minimax(
+                        score = minimax(
                             board,
                             depth + 1,
                             true,
                             thisId + returnBoardString(board)
                         );
-                    }else{
-                         score = minimax(
+                    } else {
+                        score = minimax(
                             board,
                             depth + 1,
                             true,
@@ -458,14 +458,16 @@ function checkWin() {
 }
 
 //d3 code;
-const width = 1500;
-
+const width = window.screen.width;
+const height = 1000;
 function tree(data) {
     const root = d3.hierarchy(data);
     root.dx = 50;
     root.dy = width / (root.height + 1);
     return d3.tree().nodeSize([root.dx, root.dy])(root);
 }
+
+
 
 function draw(data) {
     const root = tree(data);
@@ -477,13 +479,26 @@ function draw(data) {
         if (d.x < x0) x0 = d.x;
     });
 
-    const svg = d3.create("svg").attr("viewBox", [-500, -300, width + 300, width + 1000]);
-        // .attr("preserveAspectRatio", "xMinYMin meet");
+    function zoomed(event, node) {
+        console.log(event);
+        node.attr("transform", `translate(${event.transform.x},${event.transform.y})`);
+    }
+
+    const svg = d3.create("svg")/*.attr("viewBox", [-500, -300, 900, width])*/
+        .attr("height", height)
+        .attr("width", width);
+
+    svg.call(d3.zoom()
+        // .extent([[0, 0], [width, height]])
+        .scaleExtent([0.0000001, 1])
+        .on("zoom", (t) => zoomed(t, g)));
+
+
     const g = svg
         .append("g")
         .attr("font-family", "sans-serif")
         .attr("font-size", 10)
-    // .attr("transform", `translate(${root.dy / 3},${root.dx - x0})`);
+    // .attr("transform", `translate(${root.dy + 50},${root.dx + 300})`);
 
     const link = g
         .append("g")
@@ -517,7 +532,7 @@ function draw(data) {
         .attr("x", (d) => -14)
         .attr("text-anchor", (d) => (d.children ? "end" : "start"))
         // .text((d) => d.data.name)
-        .text((d) => returnBoard(d,0))
+        .text((d) => returnBoard(d, 0))
         .clone(true)
         .lower()
         .attr("stroke", "white");
@@ -526,7 +541,7 @@ function draw(data) {
         .attr("x", (d) => -14)
         .attr("text-anchor", (d) => (d.children ? "end" : "start"))
         // .text((d) => d.data.name)
-        .text((d) => returnBoard(d,1))
+        .text((d) => returnBoard(d, 1))
         .clone(true)
         .lower()
         .attr("stroke", "white");
@@ -535,40 +550,10 @@ function draw(data) {
         .attr("x", (d) => -14)
         .attr("text-anchor", (d) => (d.children ? "end" : "start"))
         // .text((d) => d.data.name)
-        .text((d) => returnBoard(d,2))
+        .text((d) => returnBoard(d, 2))
         .clone(true)
         .lower()
         .attr("stroke", "white");
-
-    function svg_scroll(event, [x,y] ) { 
-        d3.select("svg").node(),
-             $parent = $('#visualizeConatiner'),
-             $parent_document_height=$(document),
-             w = $parent.width(),
-             h = $parent_document_height.height(),
-             sL = $parent.scrollLeft(), 
-             sT = $parent_document_height.scrollTop();
-
-             var coordinates = d3.pointer(svg_scroll),
-                x = coordinates[0],
-                y = coordinates[1];
-
-            if (x > w + sL) {
-                $parent.scrollLeft(x - w);  
-            } else if (x < sL) {
-                $parent.scrollLeft(x);
-            }
-            if (y > sT) {
-                $parent_document_height.scrollTop(y);
-            } else if (y < sT) {
-                $parent_document_height.scrollTop(y);
-            }
-
-            d3.select(this).attr({
-                x: x - 50,
-                y: y - 25
-            });
-        }
 
 
     // console.log(svg.node())
@@ -583,54 +568,56 @@ function draw(data) {
 
 }
 
-function returnBoard(d, k){
 
-    if(k == 0){
+
+function returnBoard(d, k) {
+
+    if (k == 0) {
         let a = " .. ";
         let b = " .. ";
         let c = " .. ";
-        if(d.data.boad[0][0] != ""){
+        if (d.data.boad[0][0] != "") {
             a = d.data.boad[0][0];
         }
-        if(d.data.boad[0][1] != ""){
+        if (d.data.boad[0][1] != "") {
             b = d.data.boad[0][1];
         }
-        if(d.data.boad[0][2] != ""){
+        if (d.data.boad[0][2] != "") {
             c = d.data.boad[0][2];
         }
 
         return a + " | " + b + " | " + c;
 
     }
-    if(k == 1){
+    if (k == 1) {
         let j = " .. ";
         let e = " .. ";
         let f = " .. ";
-        if(d.data.boad[1][0] != ""){
+        if (d.data.boad[1][0] != "") {
             j = d.data.boad[1][0];
         }
-        if(d.data.boad[1][1] != ""){
+        if (d.data.boad[1][1] != "") {
             e = d.data.boad[1][1];
         }
-        if(d.data.boad[1][2] != ""){
+        if (d.data.boad[1][2] != "") {
             f = d.data.boad[1][2];
         }
         return j + " | " + e + " | " + f;
     }
-    
-    if(k == 2){
-    
+
+    if (k == 2) {
+
         let g = " .. ";
         let h = " .. ";
         let i = " .. ";
 
-        if(d.data.boad[2][0] != ""){
+        if (d.data.boad[2][0] != "") {
             g = d.data.boad[2][0];
         }
-        if(d.data.boad[2][1] != ""){
+        if (d.data.boad[2][1] != "") {
             h = d.data.boad[2][1];
         }
-        if(d.data.boad[2][2] != ""){
+        if (d.data.boad[2][2] != "") {
             i = d.data.boad[2][2];
         }
 
@@ -638,5 +625,5 @@ function returnBoard(d, k){
 
     }
 
-    
+
 }
