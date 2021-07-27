@@ -484,9 +484,9 @@ function draw(data) {
         node.attr("transform", `translate(${event.transform.x},${event.transform.y})`);
     }
 
-    const svg = d3.create("svg")/*.attr("viewBox", [-500, -300, 900, width])*/
-        .attr("height", height)
-        .attr("width", width);
+    const svg = d3.create("svg").attr("viewBox", [-1280, -100, width + 1000, width + 200]);
+        // .attr("height", height)
+        // .attr("width", width);
 
     svg.call(d3.zoom()
         // .extent([[0, 0], [width, height]])
@@ -529,7 +529,7 @@ function draw(data) {
 
     node.append("text")
         .attr("dy", (d) => "0.32rem")
-        .attr("x", (d) => -14)
+        .attr("x", (d) => -15)
         .attr("text-anchor", (d) => (d.children ? "end" : "start"))
         // .text((d) => d.data.name)
         .text((d) => returnBoard(d, 0))
@@ -538,7 +538,7 @@ function draw(data) {
         .attr("stroke", "white");
     node.append("text")
         .attr("dy", (d) => "0.98rem")
-        .attr("x", (d) => -14)
+        .attr("x", (d) => -15)
         .attr("text-anchor", (d) => (d.children ? "end" : "start"))
         // .text((d) => d.data.name)
         .text((d) => returnBoard(d, 1))
@@ -547,7 +547,7 @@ function draw(data) {
         .attr("stroke", "white");
     node.append("text")
         .attr("dy", (d) => "1.64rem")
-        .attr("x", (d) => -14)
+        .attr("x", (d) => -15)
         .attr("text-anchor", (d) => (d.children ? "end" : "start"))
         // .text((d) => d.data.name)
         .text((d) => returnBoard(d, 2))
